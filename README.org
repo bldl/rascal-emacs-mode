@@ -1,0 +1,97 @@
+#+TITLE: Rascal Mode for Emacs
+#+AUTHOR: Tero Hasu
+
+* Introduction
+
+  This is an implementation of a [[http://www.rascal-mpl.org/][Rascal]] language major mode for Emacs. The current implementation is based on [[http://cc-mode.sourceforge.net/][CC Mode]].
+
+* Features
+
+  - almost decent syntax highlighting and indentation
+  - auto-completion for language keywords, built-in primitive and parametric types, the standard =Prelude= library, along with "hover" help
+  - auto-completion for words appearing in open Rascal Mode buffers (as implemented by Auto Complete Mode)
+
+* Prerequisites and Recommendations
+
+  The Emacs packages that are recommended for use with Rascal Mode are:
+
+** CC Mode (required)
+
+   [[http://cc-mode.sourceforge.net/]]
+
+   Required. Is part of Emacs, but the =c-fill-paragraph= function appears broken in some older versions. If you get incorrect formatting of Rascal block comments with M-q, consider upgrading to a more recent version.
+
+** Auto Complete Mode (recommended)
+
+   [[http://www.cx4a.org/software/auto-complete/]]
+
+   Not a strict requirement, but you won't get auto completion for Rascal keywords, primitives, and standard library without this. This is also required for "hover" help. Typically not bundled with Emacs---refer to the homepage for installation instructions.
+
+** pos-tip.el (recommended)
+
+   [[http://www.emacswiki.org/emacs-en/PosTip]]
+
+   Not strictly required, but strongly recommended for nice-looking "hover" help. Typically not bundled with Emacs---refer to the homepage for installation instructions.
+
+** YASnippet (suggested)
+
+   [[https://github.com/capitaomorte/yasnippet]]
+
+   Useful for making commonly used code snippets available as code templates. None are currently included as part of Rascal Mode itself, but it is easy enough to create your own collection to suit your tastes. You probably already have a good enough version of YASnippet installed.
+
+* Installation
+
+  First, download Rascal Mode by using =git clone=.
+
+  Byte compilation of the Rascal Mode source files is recommended. Simply go to the Rascal Mode source directory and type =make= to do this.
+
+  To install, you need to edit your =~/.emacs= configuration. To tell Emacs where to find Rascal mode, you can write something like
+
+#+begin_src emacs-lisp
+(add-to-list 'load-path "/my/path/to/rascal-emacs-mode")
+#+end_src
+
+  and then, to tell Emacs to load the mode as required, you may write
+
+#+begin_src emacs-lisp
+(setq auto-mode-alist
+  (cons '("\\.rsc" . rascal-mode) auto-mode-alist))
+(autoload 'rascal-mode "rascal-mode-cc"
+  "mode for editing Rascal source files" t)
+#+end_src
+
+  Assuming you have Auto Complete Mode, you should also tell Emacs to enable it with Rascal Mode as follows
+
+#+begin_src emacs-lisp
+(add-to-list 'ac-modes 'rascal-mode)
+#+end_src
+
+  You may also want to assign keys for accessing help associated with the last (Auto Complete Mode) completed keyword, e.g.
+
+#+begin_src emacs-lisp
+(define-key ac-mode-map (kbd "C-c h") 'ac-last-quick-help) ;; hover
+(define-key ac-mode-map (kbd "C-c H") 'ac-last-help) ;; buffer
+#+end_src
+
+* Customizing Auto Completion
+
+  To specify new words for auto completion in Rascal Mode, a quick and easy way to do this is to (in the Rascal Mode source directory), issue the commands
+
+#+begin_src shell-script
+  mkdir -p ac-dict
+  echo my_new_word >> ac-dict/rascal-mode
+#+end_src
+  
+  and then use =M-x ac-clear-dictionary-cache= in Emacs to refresh the dictionary.
+
+* Bugs
+
+  Not created by a Rascal language lawyer, and hence there will be mistakes such as missing or spurious or miscategorized keywords.
+
+  Known bugs:
+
+  - =@doc= annotations are not displayed as part of "hover" help, although they would provide valuable information indeed.
+
+  - When using statements such as =visit= as expressions, it is necessary to end with a semicolon to get correct indentation.
+
+  - Auto-completion stops upon encountering a hyphen character (e.g. in the keyword =top-down-break=).

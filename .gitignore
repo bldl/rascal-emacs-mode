@@ -1,0 +1,8 @@
+*~
+\#*
+.\#*
+*.swp
+.DS_Store
+*.elc
+local.mk
+README.html
